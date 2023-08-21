@@ -1,0 +1,5 @@
+SELECT DISTINCT(us.id) AS user, us.country, us.gender, gr.device, gr.group,(CASE WHEN SUM(ac.spent) > 0 THEN 1 ELSE 0 END) AS converted, SUM(ac.spent) AS total_spent 
+FROM users AS us 
+FULL JOIN activity AS ac ON us.id = ac.uid 
+JOIN groups AS gr ON us.id = gr.uid 
+GROUP BY us.id, gr.device, gr.group
