@@ -1,0 +1,75 @@
+WITH 
+group_a_con AS (SELECT DISTINCT(us.id), gr.group AS group_name,  MIN(ac.dt) AS conv_date, SUM(ac.spent) AS total_spent
+                FROM users AS us
+                FULL JOIN activity AS ac
+                ON us.id = ac.uid
+                JOIN groups AS gr
+                ON us.id = gr.uid
+                WHERE gr.group = 'A'
+                GROUP BY us.id, gr.group),
+group_a_tot AS (SELECT gr.join_dt AS join_date, COUNT(DISTINCT(us.id)) AS total_users
+                FROM users AS us
+                JOIN groups AS gr
+                ON us.id = gr.uid
+                WHERE gr.group = 'A'
+                GROUP BY join_date),
+
+group_a AS (SELECT 
+            group_name, 
+            conv_date AS date, 
+            SUM(COUNT(id)) OVER (ORDER BY conv_date) AS conversions,
+            SUM(MIN(total_users)) OVER (ORDER BY conv_date) AS total,
+            SUM(total_spent)/AVG(total_users) AS avg_spent
+            FROM group_a_con
+            JOIN group_a_tot ON conv_date = join_date
+            GROUP BY conv_date, group_name
+            ORDER BY conv_date),
+
+group_a_km AS (SELECT 
+               group_name, 
+               date, 
+               ROUND((SUM(conversions) / SUM(total)), 5) AS conversion_rate,
+               ROUND(avg_spent, 2) AS average_spent
+               FROM group_a
+               GROUP BY date, avg_spent, group_name
+               ORDER BY date),
+
+group_b_con AS (SELECT DISTINCT(us.id), gr.group AS group_name,  MIN(ac.dt) AS conv_date, SUM(ac.spent) AS total_spent
+                FROM users AS us
+                FULL JOIN activity AS ac
+                ON us.id = ac.uid
+                JOIN groups AS gr
+                ON us.id = gr.uid
+                WHERE gr.group = 'B'
+                GROUP BY us.id, gr.group),
+group_b_tot AS (SELECT gr.join_dt AS join_date, COUNT(DISTINCT(us.id)) AS total_users
+                FROM users AS us
+                JOIN groups AS gr
+                ON us.id = gr.uid
+                WHERE gr.group = 'B'
+                GROUP BY join_date),
+
+group_b AS (SELECT 
+            group_name, 
+            conv_date AS date, 
+            SUM(COUNT(id)) OVER (ORDER BY conv_date) AS conversions,
+            SUM(MIN(total_users)) OVER (ORDER BY conv_date) AS total,
+            SUM(total_spent)/AVG(total_users) AS avg_spent
+            FROM group_b_con
+            JOIN group_b_tot ON conv_date = join_date
+            GROUP BY conv_date, group_name
+            ORDER BY conv_date),
+
+group_b_km AS (SELECT 
+               group_name, 
+               date, 
+               ROUND((SUM(conversions) / SUM(total)), 5) AS conversion_rate,
+               ROUND(avg_spent, 2) AS average_spent
+               FROM group_b
+               GROUP BY date, avg_spent, group_name
+               ORDER BY date)
+
+SELECT * FROM group_a_km
+UNION ALL
+SELECT * FROM group_b_km
+ORDER BY group_name
