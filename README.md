@@ -1,5 +1,10 @@
 # Globox-AB-Test
 
+## Tables:
+
+- Table 1 extracts the curated data for analysis
+- Table 2 tracks key metrics (conversion rate and Average Revenue per Customer (ARPU) over time
+
 ## Database access:
 
 postgres://Test:bQNxVzJL4g6u@ep-noisy-flower-846766-pooler.us-east-2.aws.neon.tech/Globox
