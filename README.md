@@ -2,7 +2,7 @@
 
 ## Tables:
 
-- Table 1 extracts the curated data for analysis
+- Table 1 extracts curated data for analysis
 - Table 2 tracks key metrics (conversion rate and Average Revenue per Customer (ARPU) over time
 
 ## Database access:
